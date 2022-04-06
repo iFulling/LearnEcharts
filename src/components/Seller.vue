@@ -19,7 +19,7 @@ export default {
   methods: {
     // 初始化echartsInstance对象
     initChart() {
-      this.echartsInstance = this.$echarts.init(this.$refs.seller_ref,'chalk');
+      this.echartsInstance = this.$echarts.init(this.$refs.seller_ref, "chalk");
       this.echartsInstance.on("mouseover", () => {
         clearInterval(this.timer);
       });
@@ -55,9 +55,21 @@ export default {
         return item.value;
       });
       const option = {
-          title:{
-              
+        title: {
+          text: "▍商家销售统计",
+          textStyle: {
+            fontSize: 66,
           },
+          left: 40,
+          top: 40 ,
+        },
+        grid:{
+            top:"20%",
+            left:"6%",
+            right:"6%",
+            bottom:"3%",
+            containLabel:true
+        },
         xAxis: {
           type: "value",
         },
@@ -69,6 +81,10 @@ export default {
           {
             type: "bar",
             data: sellerValue,
+            barWidth:66,
+            label:{
+                show:true
+            }
           },
         ],
       };
