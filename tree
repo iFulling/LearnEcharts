@@ -1,0 +1,46 @@
+.
+├── babel.config.js
+├── jsconfig.json
+├── KOA_SERVER
+│   ├── app.js
+│   ├── data
+│   │   ├── budget.json
+│   │   ├── hotproduct.json
+│   │   ├── map.json
+│   │   ├── rank.json
+│   │   ├── seller.json
+│   │   ├── stock.json
+│   │   └── trend.json
+│   ├── LearnKoa.js
+│   ├── middleware
+│   │   ├── koa_response_data.js
+│   │   ├── koa_response_duration.js
+│   │   └── koa_response_header.js
+│   └── utils
+│       └── file_utils.js
+├── node_modules
+│   └── ....
+├── package.json
+├── package-lock.json
+├── public
+│   ├── favicon.ico
+│   └── index.html
+├── README.md
+├── src
+│   ├── App.vue
+│   ├── assets
+│   │   └── logo.png
+│   ├── components
+│   │   └── HelloWorld.vue
+│   ├── main.js
+│   ├── router
+│   │   └── index.js
+│   ├── store
+│   │   └── index.js
+│   └── views
+│       ├── AboutView.vue
+│       └── HomeView.vue
+├── tree
+└── vue.config.js
+
+3145 directories, 22429 files
