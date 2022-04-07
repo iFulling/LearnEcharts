@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import "@/assets/css/global.less"
+import "@/assets/font/iconfont.css"
 
 // 请求基准路径
 axios.defaults.baseURL = "http://192.168.177.77:5000"
