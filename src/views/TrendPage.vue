@@ -1,14 +1,14 @@
 <template>
   <div class="com-page">
-    <seller />
+    <trend />
   </div>
 </template>
 
 <script>
-import Seller from "../components/Seller.vue";
+import trend from "../components/Trend.vue";
 export default {
-  name: "SellerPage",
-  components: { Seller },
+  name: "TrendPage",
+  components: { trend },
 };
 </script>
 
