@@ -20,6 +20,61 @@ export default {
     // 初始化echartsInstance对象
     initChart() {
       this.echartsInstance = this.$echarts.init(this.$refs.seller_ref, "chalk");
+      const initOption = {
+        title: {
+          text: "▍商家销售统计",
+          left: 40,
+          top: 40,
+        },
+        grid: {
+          top: "20%",
+          left: "6%",
+          right: "6%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "value",
+        },
+        yAxis: {
+          type: "category",
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "line",
+            z: 0,
+            lineStyle: {
+              color: "#2D3443",
+            },
+          },
+        },
+        series: [
+          {
+            type: "bar",
+            label: {
+              show: true,
+              position: "right",
+              textStyle: {
+                color: "white",
+              },
+            },
+            itemStyle: {
+              color: new this.$echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                {
+                  offset: 0,
+                  color: "#5052EE",
+                },
+                {
+                  offset: 1,
+                  color: "#AB6EE5",
+                },
+              ]),
+            },
+          },
+        ],
+      };
+      this.echartsInstance.setOption(initOption);
       this.echartsInstance.on("mouseover", () => {
         clearInterval(this.timer);
       });
@@ -54,71 +109,20 @@ export default {
       const sellerValue = showData.map((item) => {
         return item.value;
       });
-      const option = {
-        title: {
-          text: "▍商家销售统计",
-          textStyle: {
-            fontSize: 66,
-          },
-          left: 40,
-          top: 40,
-        },
-        grid: {
-          top: "20%",
-          left: "6%",
-          right: "6%",
-          bottom: "3%",
-          containLabel: true,
-        },
-        xAxis: {
-          type: "value",
-        },
+      const dataOption = {
         yAxis: {
-          type: "category",
           data: sellerNames,
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "line",
-            z:0,
-            lineStyle: {
-              width: 66,
-              color: "#2D3443",
-            },
-          },
         },
         series: [
           {
-            type: "bar",
             data: sellerValue,
-            barWidth: 66,
-            label: {
-              show: true,
-              position: "right",
-              textStyle: {
-                color: "white",
-              },
-            },
-            itemStyle: {
-              barBorderRadius: [0, 33, 33, 0],
-              color: new this.$echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                {
-                  offset: 0,
-                  color: "#5052EE",
-                },
-                {
-                  offset: 1,
-                  color: "#AB6EE5",
-                },
-              ]),
-            },
           },
         ],
       };
-      window.onresize = this.echartsInstance.resize;
-      this.echartsInstance.setOption(option);
+      this.echartsInstance.setOption(dataOption);
     },
+
+    // 自动切换
     startInterval() {
       if (this.timer) clearInterval(this.timer);
       this.timer = setInterval(() => {
@@ -127,13 +131,46 @@ export default {
         this.updataChart();
       }, 3000);
     },
+
+    // 屏幕适配
+    screenAdapter() {
+      const titleFontSize = (this.$refs.seller_ref.offsetWidth / 100) * 3.6;
+      const adapterOption = {
+        title: {
+          textStyle: {
+            fontSize: titleFontSize,
+          },
+        },
+        tooltip: {
+          axisPointer: {
+            lineStyle: {
+              width: titleFontSize,
+            },
+          },
+        },
+        series: [
+          {
+            barWidth: titleFontSize,
+            itemStyle: {
+              barBorderRadius: [0, titleFontSize / 2, titleFontSize / 2, 0],
+            },
+          },
+        ],
+      };
+      this.echartsInstance.setOption(adapterOption);
+      // 手动调用产生效果
+      this.echartsInstance.resize();
+    },
   },
   mounted() {
     this.initChart();
     this.getData();
+    window.addEventListener("resize", this.screenAdapter);
+    this.screenAdapter();
   },
   beforeDestroy() {
     clearInterval(this.timer);
+    window.removeEventListener("resize", this.screenAdapter);
   },
 };
 </script>
