@@ -129,6 +129,11 @@ export default {
           {
             radius: this.titleFontSize * 4.5,
             center: ["50%", "60%"],
+            label: {
+              textStyle: {
+                fontSize: this.titleFontSize / 2,
+              },
+            },
           },
         ],
       };
