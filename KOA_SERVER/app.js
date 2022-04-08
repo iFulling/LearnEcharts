@@ -1,6 +1,5 @@
 // 创建 koa 对象
 const koa = require("koa");
-const context = require("koa/lib/context");
 const app = new koa();
 
 // 绑定第一层中间件
@@ -19,3 +18,10 @@ app.listen(5000, (err) => {
   if (!err) return console.log("port 5000 is listening...");
   console.log(err);
 });
+
+
+const WebSocket = require("ws")
+// 创建websocket服务端的对象，绑定的端口号是5055
+new WebSocket.Server({
+  port:5055
+})
