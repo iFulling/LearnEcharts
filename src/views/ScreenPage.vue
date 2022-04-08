@@ -10,7 +10,7 @@
       <span class="title">电商平台实时监控系统</span>
       <div class="title-right">
         <img @click="handleChangeTheme" src="/static/img/qiehuan_dark.png" class="qiehuan" />
-        <span class="datatime">2049-01-01 00:00:00</span>
+        <span class="datetime">2049-01-01 00:00:00</span>
       </div>
     </header>
     <div class="screen-body">
