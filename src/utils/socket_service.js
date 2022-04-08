@@ -8,30 +8,38 @@ export default class SocketService {
   }
   ws = null;
   callBackMapping = {};
+  connected = false;
+  sendRetryCount = 0;
+  connectRetryCount = 0;
   connect() {
     if (!window.WebSocket) {
       return alert("你的浏览器不支持WebSocket");
     }
     this.ws = new WebSocket("ws://192.168.177.77:5055");
     this.ws.onopen = () => {
-      console.log("connect");
+      console.log("connect", Date.now());
+      this.connected = true;
+      this.connectRetryCount = 0;
     };
     this.ws.onclose = () => {
       console.log("close");
+      this.connected = false;
+      this.connectRetryCount++;
+      setTimeout(() => {
+        this.connect();
+      }, this.connectRetryCount * 500);
     };
     this.ws.onmessage = (msg) => {
-      const recive = JSON.parse(msg.data)
-      const socketType = recive.socketType
-      if(this.callBackMapping[socketType]){
-          const action = recive.action
-          if (action === "getData"){
-            const realData = JSON.parse(recive.data)
-            this.callBackMapping[socketType].call(this, realData)
-          }else if (action ==="fullScreen"){
-
-          }else if (action === "themeChange"){
-
-          }
+      const recive = JSON.parse(msg.data);
+      const socketType = recive.socketType;
+      if (this.callBackMapping[socketType]) {
+        const action = recive.action;
+        if (action === "getData") {
+          const realData = JSON.parse(recive.data);
+          this.callBackMapping[socketType].call(this, realData);
+        } else if (action === "fullScreen") {
+        } else if (action === "themeChange") {
+        }
       }
     };
   }
@@ -41,7 +49,15 @@ export default class SocketService {
   unRegisterCallback(socketType) {
     this.callBackMapping[socketType] = null;
   }
-  send(data){
-      this.ws.send(JSON.stringify(data))
+  send(data) {
+    if (this.connected) {
+      this.sendRetryCount = 0;
+      this.ws.send(JSON.stringify(data));
+    } else {
+      this.sendRetryCount++;
+      setTimeout(() => {
+        this.send(data);
+      }, this.sendRetryCount * 500);
+    }
   }
 }

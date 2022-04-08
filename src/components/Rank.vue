@@ -55,13 +55,11 @@ export default {
         this.startInterval();
       });
     },
-    async getData() {
-      const { data } = await this.$axios.get("rank");
-      this.allData = data;
+     getData(realData) {
+      this.allData = realData;
       this.allData.sort((a, b) => {
         return b.value - a.value;
       });
-      console.log(data);
       this.updataChart();
       this.startInterval();
     },
@@ -151,15 +149,24 @@ export default {
       }, 2000);
     },
   },
+  created() {
+    this.$socket.registerCallback("rankData", this.getData);
+  },
   mounted() {
     this.initChart();
-    this.getData();
+    this.$socket.send({
+      action: "getData",
+      socketType: "rankData",
+      chartName: "rank",
+      value: "",
+    });
     window.addEventListener("resize", this.screenAdapter);
     this.screenAdapter();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.screenAdapter);
     clearInterval(this.timer);
+    this.$socket.unRegisterCallback("rankData");
   },
 };
 </script>

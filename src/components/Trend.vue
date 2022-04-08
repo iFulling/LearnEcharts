@@ -64,10 +64,8 @@ export default {
       };
       this.chartInstance.setOption(initOption);
     },
-    async getData() {
-      const { data } = await this.$axios.get("trend");
-      this.allData = data;
-      console.log(data);
+    getData(realData) {
+      this.allData = realData;
       this.updataChart();
     },
     updataChart() {
@@ -167,14 +165,24 @@ export default {
       };
     },
   },
+  created() {
+    this.$socket.registerCallback("trendData", this.getData);
+  },
   mounted() {
     this.initChart();
-    this.getData();
+    console.log("mounted", Date.now());
+    this.$socket.send({
+      action: "getData",
+      socketType: "trendData",
+      chartName: "trend",
+      value: "",
+    });
     window.addEventListener("resize", this.screenAdopter);
     this.screenAdopter();
   },
   destroyed() {
     window.removeEventListener("resize", this.screenAdopter);
+    this.$socket.unRegisterCallback("trendData");
   },
 };
 </script>
@@ -190,7 +198,7 @@ export default {
   transform: rotate(0turn);
   cursor: pointer;
 }
-.select-con{
-    background-color: #222733;
+.select-con {
+  background-color: #222733;
 }
 </style>

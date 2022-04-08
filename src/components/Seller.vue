@@ -84,10 +84,9 @@ export default {
     },
 
     // 获取数据
-    async getData() {
-      const { data } = await this.$axios.get("seller");
+     getData(realData) {
       // 排序
-      this.allData = data.sort((a, b) => {
+      this.allData = realData.sort((a, b) => {
         return a.value - b.value;
       });
       // 每五个元素显示一页
@@ -162,15 +161,24 @@ export default {
       this.echartsInstance.resize();
     },
   },
+  created(){
+    this.$socket.registerCallback("sellerData", this.getData);
+  },
   mounted() {
     this.initChart();
-    this.getData();
+    this.$socket.send({
+      action: "getData",
+      socketType: "sellerData",
+      chartName: "seller",
+      value: "",
+    });
     window.addEventListener("resize", this.screenAdapter);
     this.screenAdapter();
   },
   beforeDestroy() {
     clearInterval(this.timer);
     window.removeEventListener("resize", this.screenAdapter);
+    this.$socket.unRegisterCallback("sellerData");
   },
 };
 </script>

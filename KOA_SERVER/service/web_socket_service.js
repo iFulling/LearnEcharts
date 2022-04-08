@@ -13,10 +13,10 @@ module.exports.listen = () => {
     // 对客户端的连接对象进行 message 事件监听
     // msg 由客户端发给服务端的数据
     client.on("message", async (msg) => {
-      console.log(msg);
       let payload = JSON.parse(msg);
+      const action = payload.action
       if (action === "getData") {
-        let filePath = "../data" + payload.chartName + ".join";
+        let filePath = "../data/" + payload.chartName + ".json";
         filePath = path.join(__dirname, filePath);
         const ret = await fileUtils.getFileJsonData(filePath);
         payload.data = ret;

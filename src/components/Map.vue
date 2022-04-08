@@ -67,9 +67,8 @@ export default {
         this.echartsInstance.setOption(changeOption);
       });
     },
-    async getData() {
-      const { data } = await this.$axios.get("map");
-      this.allDate = data;
+    getData(realData) {
+      this.allDate = realData;
       this.updateChart();
     },
     updateChart() {
@@ -125,14 +124,24 @@ export default {
       this.echartsInstance.setOption(revertOption);
     },
   },
+  created() {
+    this.$socket.registerCallback("mapData", this.getData);
+  },
   mounted() {
     this.initChart();
-    this.getData();
+    this.$socket.send({
+      action: "getData",
+      socketType: "mapData",
+      chartName: "map",
+      value: "",
+    });
     window.addEventListener("resize", this.screenAdapter);
     this.screenAdapter();
   },
-  destroyed() {
+  beforeDestroy() {
     window.removeEventListener("resize", this.screenAdapter);
+    clearInterval(this.timer);
+    this.$socket.unRegisterCallback("mapData");
   },
 };
 </script>

@@ -33,10 +33,8 @@ export default {
         this.startInterval();
       });
     },
-    async getData() {
-      const { data } = await this.$axios.get("stock");
-      this.allData = data;
-      console.log(this.allData);
+    getData(realData) {
+      this.allData = realData;
       this.updataChart();
       this.startInterval();
     },
@@ -108,7 +106,7 @@ export default {
             fontSize: titleFontSize,
           },
         },
-        series: [seriesArr,seriesArr,seriesArr,seriesArr,seriesArr],
+        series: [seriesArr, seriesArr, seriesArr, seriesArr, seriesArr],
       };
       this.echartsInstance.setOption(adapterOption);
       this.echartsInstance.resize();
@@ -124,15 +122,24 @@ export default {
       }, 5000);
     },
   },
+  created() {
+    this.$socket.registerCallback("stockData", this.getData);
+  },
   mounted() {
     this.initChart();
-    this.getData();
+    this.$socket.send({
+      action: "getData",
+      socketType: "stockData",
+      chartName: "stock",
+      value: "",
+    });
     window.addEventListener("resize", this.screenAdapter);
     this.screenAdapter();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.screenAdapter);
     clearInterval(this.timer);
+    this.$socket.unRegisterCallback("stockData");
   },
 };
 </script>

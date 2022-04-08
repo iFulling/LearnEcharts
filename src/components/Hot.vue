@@ -77,9 +77,8 @@ export default {
       };
       this.echartsInstance.setOption(initOption);
     },
-    async getData() {
-      const { data } = await this.$axios.get("hotproduct");
-      this.allData = data;
+     getData(realData) {
+      this.allData = realData;
       this.updataChart();
     },
     updataChart() {
@@ -152,14 +151,24 @@ export default {
       this.updataChart();
     },
   },
+  created() {
+    this.$socket.registerCallback("hotData", this.getData);
+  },
   mounted() {
     this.initChart();
-    this.getData();
+    this.$socket.send({
+      action: "getData",
+      socketType: "hotData",
+      chartName: "hotproduct",
+      value: "",
+    });
     window.addEventListener("resize", this.screenAdapter);
     this.screenAdapter();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.screenAdapter);
+    clearInterval(this.timer);
+    this.$socket.unRegisterCallback("hotData");
   },
 };
 </script>

@@ -16,10 +16,8 @@ Vue.prototype.$echarts = window.echarts;
 Vue.prototype.$socket = SocketService.Instance
 Vue.config.productionTip = false;
 
-const vm = new Vue({
+new Vue({
   router,
   store,
   render: (h) => h(App),
 }).$mount("#app");
-
-console.log(vm);
