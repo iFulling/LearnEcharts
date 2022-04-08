@@ -6,34 +6,43 @@ import MapPage from "@/views/MapPage";
 import RankPage from "@/views/RankPage";
 import HotPage from "@/views/HotPage";
 import StockPage from "@/views/StockPage";
+import ScreenPage from "@/views/ScreenPage";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/sellerpage",
-    component: SellerPage,
+    path: "/",
+    redirect: "/screen",
   },
   {
-    path: "/trendPage",
-    component: TrendPage,
+    path: "/screen",
+    component: ScreenPage,
   },
-  {
-    path: "/mappage",
-    component: MapPage,
-  },
-  {
-    path: "/rankpage",
-    component: RankPage,
-  },
-  {
-    path: "/hotpage",
-    component: HotPage,
-  },
-  {
-    path: "/stockpage",
-    component: StockPage,
-  },
+  // {
+  //   path: "/sellerpage",
+  //   component: SellerPage,
+  // },
+  // {
+  //   path: "/trendPage",
+  //   component: TrendPage,
+  // },
+  // {
+  //   path: "/mappage",
+  //   component: MapPage,
+  // },
+  // {
+  //   path: "/rankpage",
+  //   component: RankPage,
+  // },
+  // {
+  //   path: "/hotpage",
+  //   component: HotPage,
+  // },
+  // {
+  //   path: "/stockpage",
+  //   component: StockPage,
+  // },
 ];
 
 const router = new VueRouter({
