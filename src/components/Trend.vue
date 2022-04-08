@@ -121,7 +121,7 @@ export default {
       };
       this.chartInstance.setOption(dataOption);
     },
-    screenAdopter() {
+    screenAdapter() {
       this.titleFontSize = (this.$refs.trend_ref.offsetWidth / 100) * 3.6;
       const adopterOption = {
         legend: {
@@ -177,11 +177,11 @@ export default {
       chartName: "trend",
       value: "",
     });
-    window.addEventListener("resize", this.screenAdopter);
-    this.screenAdopter();
+    window.addEventListener("resize", this.screenAdapter);
+    this.screenAdapter();
   },
   destroyed() {
-    window.removeEventListener("resize", this.screenAdopter);
+    window.removeEventListener("resize", this.screenAdapter);
     this.$socket.unRegisterCallback("trendData");
   },
 };

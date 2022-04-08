@@ -15,27 +15,104 @@
     </header>
     <div class="screen-body">
       <section class="screen-left">
-        <div id="left-top">
-          <trend />
+        <div
+          id="left-top"
+          :class="[fullScreenStatus.trend ? 'fullscreen' : '']"
+        >
+          <trend ref="trend" />
+          <div class="resize">
+            <span
+              @click="changeSize('trend')"
+              :class="[
+                'iconfont',
+                fullScreenStatus.trend
+                  ? 'icon-compress-alt'
+                  : 'icon-expand-alt',
+              ]"
+            ></span>
+          </div>
         </div>
-        <div id="left-bottom">
-          <seller />
+        <div
+          id="left-bottom"
+          :class="[fullScreenStatus.seller ? 'fullscreen' : '']"
+        >
+          <seller ref="seller" />
+          <div class="resize">
+            <span
+              @click="changeSize('seller')"
+              :class="[
+                'iconfont',
+                fullScreenStatus.seller
+                  ? 'icon-compress-alt'
+                  : 'icon-expand-alt',
+              ]"
+            ></span>
+          </div>
         </div>
       </section>
       <section class="screen-middle">
-        <div id="middle-top">
-          <Map />
+        <div
+          id="middle-top"
+          :class="[fullScreenStatus.theMap ? 'fullscreen' : '']"
+        >
+          <theMap ref="theMap" />
+          <div class="resize">
+            <span
+              @click="changeSize('theMap')"
+              :class="[
+                'iconfont',
+                fullScreenStatus.theMap
+                  ? 'icon-compress-alt'
+                  : 'icon-expand-alt',
+              ]"
+            ></span>
+          </div>
         </div>
-        <div id="middle-bottom">
-          <rank />
+        <div
+          id="middle-bottom"
+          :class="[fullScreenStatus.rank ? 'fullscreen' : '']"
+        >
+          <rank ref="rank" />
+          <div class="resize">
+            <span
+              @click="changeSize('rank')"
+              :class="[
+                'iconfont',
+                fullScreenStatus.rank ? 'icon-compress-alt' : 'icon-expand-alt',
+              ]"
+            ></span>
+          </div>
         </div>
       </section>
       <section class="screen-right">
-        <div id="right-top">
-          <hot />
+        <div id="right-top" :class="[fullScreenStatus.hot ? 'fullscreen' : '']">
+          <hot ref="hot" />
+          <div class="resize">
+            <span
+              @click="changeSize('hot')"
+              :class="[
+                'iconfont',
+                fullScreenStatus.hot ? 'icon-compress-alt' : 'icon-expand-alt',
+              ]"
+            ></span>
+          </div>
         </div>
-        <div id="right-bottom">
-          <stock />
+        <div
+          id="right-bottom"
+          :class="[fullScreenStatus.stock ? 'fullscreen' : '']"
+        >
+          <stock ref="stock" />
+          <div class="resize">
+            <span
+              @click="changeSize('stock')"
+              :class="[
+                'iconfont',
+                fullScreenStatus.stock
+                  ? 'icon-compress-alt'
+                  : 'icon-expand-alt',
+              ]"
+            ></span>
+          </div>
         </div>
       </section>
     </div>
@@ -45,17 +122,68 @@
 <script>
 import Trend from "@/components/Trend.vue";
 import Seller from "@/components/Seller.vue";
-import Map from "@/components/Map.vue";
+import theMap from "@/components/Map.vue";
 import Rank from "@/components/Rank.vue";
 import Hot from "@/components/Hot.vue";
 import Stock from "@/components/Stock.vue";
 export default {
-  components: { Trend, Seller, Map, Rank, Hot, Stock },
   name: "ScreenPage",
+  components: { Trend, Seller, theMap, Rank, Hot, Stock },
+  data() {
+    return {
+      fullScreenStatus: {
+        trend: false,
+        seller: false,
+        theMap: false,
+        rank: false,
+        hot: false,
+        stock: false,
+      },
+    };
+  },
+  methods: {
+    changeSize(chartName) {
+      //   this.fullScreenStatus[chartName] = !this.fullScreenStatus[chartName];
+      //   this.$nextTick(() => {
+      //     this.$refs[chartName].screenAdapter();
+      //   });
+      const targetValue = !this.fullScreenStatus[chartName];
+      this.$socket.send({
+        action: "fullScreen",
+        socketType: "fullScreen",
+        chartName,
+        value: targetValue,
+      });
+    },
+    receiveData(data) {
+      const chartName = data.chartName;
+      const targetValue = data.value;
+      this.fullScreenStatus[chartName] = targetValue;
+      this.$nextTick(() => {
+        this.$refs[chartName].screenAdapter();
+      });
+    },
+  },
+  created() {
+    this.$socket.registerCallback("fullScreen", this.receiveData);
+  },
+  beforeDestroy() {
+    this.$socket.unRegisterCallback("fullScreen", this.receiveData);
+  },
 };
 </script>
 
 <style lang="less" scoped>
+.fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  z-index: 100;
+}
+
 .screen-container {
   width: 100%;
   height: 100%;
@@ -118,9 +246,11 @@ export default {
     height: 100%;
     width: 27.6%;
     #left-top {
+      position: relative;
       height: 53%;
     }
     #left-bottom {
+      position: relative;
       height: 31%;
       margin-top: 25px;
     }
@@ -131,10 +261,12 @@ export default {
     margin-left: 1.6%;
     margin-right: 1.6%;
     #middle-top {
+      position: relative;
       width: 100%;
       height: 56%;
     }
     #middle-bottom {
+      position: relative;
       margin-top: 25px;
       width: 100%;
       height: 28%;
@@ -144,12 +276,20 @@ export default {
     height: 100%;
     width: 27.6%;
     #right-top {
+      position: relative;
       height: 46%;
     }
     #right-bottom {
+      position: relative;
       height: 38%;
       margin-top: 25px;
     }
   }
+}
+.resize {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  cursor: pointer;
 }
 </style>

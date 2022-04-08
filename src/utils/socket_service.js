@@ -38,6 +38,8 @@ export default class SocketService {
           const realData = JSON.parse(recive.data);
           this.callBackMapping[socketType].call(this, realData);
         } else if (action === "fullScreen") {
+
+          this.callBackMapping[socketType].call(this, recive);
         } else if (action === "themeChange") {
         }
       }

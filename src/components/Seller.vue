@@ -23,8 +23,8 @@ export default {
       const initOption = {
         title: {
           text: "▍商家销售统计",
-          left: 40,
-          top: 40,
+          left: 20,
+          top: 20,
         },
         grid: {
           top: "20%",

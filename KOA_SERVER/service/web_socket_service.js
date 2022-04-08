@@ -23,7 +23,7 @@ module.exports.listen = () => {
         client.send(JSON.stringify(payload));
       } else {
         wss.clients.forEach((client) => {
-          client.send(msg);
+          client.send(msg.toString());
         });
       }
       // 服务端往客户端发送数据
