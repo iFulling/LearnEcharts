@@ -1,51 +1,140 @@
 <template>
-    <div class="com-container">
-    <div class="com-chart" ref="hot_ref"></div>
+  <div class="com-container">
+    <div class="com-chart" ref="stock_ref"></div>
   </div>
 </template>
 
 <script>
 export default {
-    name:"Hot",
-    data() {
+  name: "Stock",
+  data() {
+    return {
+      echartsInstance: null,
+      allData: null,
+      currentIndex: 0,
+      timer: null,
+    };
+  },
+  methods: {
+    initChart() {
+      this.echartsInstance = this.$echarts.init(this.$refs.stock_ref, "chalk");
+      const initOption = {
+        title: {
+          text: "▎库存和销量分析",
+          left: 20,
+          top: 20,
+        },
+      };
+      this.echartsInstance.setOption(initOption);
+      this.echartsInstance.on("mouseover", () => {
+        clearInterval(this.timer);
+      });
+      this.echartsInstance.on("mouseout", () => {
+        this.startInterval();
+      });
+    },
+    async getData() {
+      const { data } = await this.$axios.get("stock");
+      this.allData = data;
+      console.log(this.allData);
+      this.updataChart();
+      this.startInterval();
+    },
+    updataChart() {
+      const centerArr = [
+        ["18%", "40%"],
+        ["50%", "40%"],
+        ["82%", "40%"],
+        ["34%", "75%"],
+        ["66%", "75%"],
+      ];
+      const colorArr = [
+        ["#4FF778", "#0BA82C"],
+        ["#E5DD45", "#E8B11C"],
+        ["#E8821C", "#E55445"],
+        ["#5052EE", "#AB6EE5"],
+        ["#23E5E5", "#2E72BF"],
+      ];
+      const start = this.currentIndex * 5;
+      const end = (this.currentIndex + 1) * 5;
+      const showData = this.allData.slice(start, end);
+      const seriesArr = showData.map((item, index) => {
+        const color = colorArr[index];
         return {
-            echartsInstance :null,
-            allData:null
-        }
+          type: "pie",
+          center: centerArr[index],
+          hoverAnimation: false,
+          labelLine: {
+            show: false,
+          },
+          label: {
+            position: "center",
+            color: color[0],
+          },
+          data: [
+            {
+              name: item.name + "\n" + item.sales,
+              value: item.sales,
+              itemStyle: {
+                color: new this.$echarts.graphic.LinearGradient(0, 1, 0, 0, [
+                  { offset: 0, color: color[0] },
+                  { offset: 1, color: color[1] },
+                ]),
+              },
+            },
+            { value: item.stock, itemStyle: { color: "#333843" } },
+          ],
+        };
+      });
+      const dataOption = {
+        series: seriesArr,
+      };
+      this.echartsInstance.setOption(dataOption);
     },
-    methods:{
-        initOption(){
-            this.echartsInstance = this.$echarts.init(this.$refs.hot_ref)
-            const initOption = {}
-            this.echartsInstance.setOption(initOption)
+    screenAdapter() {
+      const titleFontSize = (this.$refs.stock_ref.offsetWidth / 100) * 3.6;
+      const innerRadius = titleFontSize * 2;
+      const outterRadius = innerRadius * 1.125;
+      const seriesArr = {
+        type: "pie",
+        radius: [outterRadius, innerRadius],
+        label: {
+          fontSize: titleFontSize / 2,
         },
-        async getData(){
-            const {data} = await this.$axios.get("hot")
-            this.allData = data
-    this.updataOption()
+      };
+      const adapterOption = {
+        title: {
+          textStyle: {
+            fontSize: titleFontSize,
+          },
         },
-        updataOption(){
-            const dataOption = {}
-            this.echartsInstance.setOption(dataOption)
-        },
-        screenAdapter(){
-            const adapterOption = {}
-            this.echartsInstance.setOption(adapterOption)
-            this.echartsInstance.resize()
-        }
+        series: [seriesArr,seriesArr,seriesArr,seriesArr,seriesArr],
+      };
+      this.echartsInstance.setOption(adapterOption);
+      this.echartsInstance.resize();
     },
-    mounted(){
-        this.initOption()
-        this.getData()
-        window.addEventListener("resize", this.screenAdapter)
-        this.screenAdapter()
+    startInterval() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+      this.timer = setInterval(() => {
+        this.currentIndex++;
+        if (this.currentIndex > 1) this.currentIndex = 0;
+        this.updataChart();
+      }, 5000);
     },
-    beforeDestroy(){
-        window.removeEventListener("resize", this.screenAdapter)
-    }
-}
+  },
+  mounted() {
+    this.initChart();
+    this.getData();
+    window.addEventListener("resize", this.screenAdapter);
+    this.screenAdapter();
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.screenAdapter);
+    clearInterval(this.timer);
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

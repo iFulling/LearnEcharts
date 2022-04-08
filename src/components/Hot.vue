@@ -80,7 +80,6 @@ export default {
     async getData() {
       const { data } = await this.$axios.get("hotproduct");
       this.allData = data;
-      console.log(this.allData);
       this.updataChart();
     },
     updataChart() {
