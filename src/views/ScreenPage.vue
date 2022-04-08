@@ -9,7 +9,7 @@
       </span>
       <span class="title">电商平台实时监控系统</span>
       <div class="title-right">
-        <img src="/static/img/qiehuan_dark.png" class="qiehuan" />
+        <img @click="handleChangeTheme" src="/static/img/qiehuan_dark.png" class="qiehuan" />
         <span class="datatime">2049-01-01 00:00:00</span>
       </div>
     </header>
@@ -163,6 +163,9 @@ export default {
         this.$refs[chartName].screenAdapter();
       });
     },
+    handleChangeTheme(){
+        this.$store.commit('changeTheme')
+    }
   },
   created() {
     this.$socket.registerCallback("fullScreen", this.receiveData);

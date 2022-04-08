@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Hot",
   data() {
@@ -27,10 +28,19 @@ export default {
         fontSize: this.titleFontSize + "px",
       };
     },
+    ...mapState(["theme"]),
+  },
+  watch: {
+    theme() {
+      this.echartsInstance.dispose();
+      this.initChart();
+      this.screenAdapter();
+      this.updataChart();
+    },
   },
   methods: {
     initChart() {
-      this.echartsInstance = this.$echarts.init(this.$refs.hot_ref, "chalk");
+      this.echartsInstance = this.$echarts.init(this.$refs.hot_ref, this.theme);
       const initOption = {
         title: {
           text: "▎热销商品的占比",
@@ -77,7 +87,7 @@ export default {
       };
       this.echartsInstance.setOption(initOption);
     },
-     getData(realData) {
+    getData(realData) {
       this.allData = realData;
       this.updataChart();
     },
@@ -147,7 +157,6 @@ export default {
     toRight() {
       this.currentIndex++;
       if (this.currentIndex > this.allData.length - 1) this.currentIndex = 0;
-
       this.updataChart();
     },
   },

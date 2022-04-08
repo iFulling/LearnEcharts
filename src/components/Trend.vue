@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -37,7 +38,7 @@ export default {
   },
   methods: {
     initChart() {
-      this.chartInstance = this.$echarts.init(this.$refs.trend_ref, "chalk");
+      this.chartInstance = this.$echarts.init(this.$refs.trend_ref, this.theme);
       const initOption = {
         grid: {
           left: "3%",
@@ -163,6 +164,15 @@ export default {
       return {
         marginLeft: this.titleFontSize * 0.6 + "px",
       };
+    },
+    ...mapState(["theme"]),
+  },
+  watch: {
+    theme() {
+      this.chartInstance.dispose();
+      this.initChart();
+      this.screenAdapter();
+      this.updataChart();
     },
   },
   created() {

@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Seller",
   data() {
@@ -19,7 +20,10 @@ export default {
   methods: {
     // 初始化echartsInstance对象
     initChart() {
-      this.echartsInstance = this.$echarts.init(this.$refs.seller_ref, "chalk");
+      this.echartsInstance = this.$echarts.init(
+        this.$refs.seller_ref,
+        this.theme
+      );
       const initOption = {
         title: {
           text: "▍商家销售统计",
@@ -84,7 +88,7 @@ export default {
     },
 
     // 获取数据
-     getData(realData) {
+    getData(realData) {
       // 排序
       this.allData = realData.sort((a, b) => {
         return a.value - b.value;
@@ -161,7 +165,18 @@ export default {
       this.echartsInstance.resize();
     },
   },
-  created(){
+  computed: {
+    ...mapState(["theme"]),
+  },
+  watch: {
+    theme() {
+      this.echartsInstance.dispose();
+      this.initChart();
+      this.screenAdapter();
+      this.updataChart();
+    },
+  },
+  created() {
     this.$socket.registerCallback("sellerData", this.getData);
   },
   mounted() {

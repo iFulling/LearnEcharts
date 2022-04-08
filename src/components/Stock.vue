@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Stock",
   data() {
@@ -17,7 +18,10 @@ export default {
   },
   methods: {
     initChart() {
-      this.echartsInstance = this.$echarts.init(this.$refs.stock_ref, "chalk");
+      this.echartsInstance = this.$echarts.init(
+        this.$refs.stock_ref,
+        this.theme
+      );
       const initOption = {
         title: {
           text: "▎库存和销量分析",
@@ -120,6 +124,17 @@ export default {
         if (this.currentIndex > 1) this.currentIndex = 0;
         this.updataChart();
       }, 5000);
+    },
+  },
+  computed: {
+    ...mapState(["theme"]),
+  },
+  watch: {
+    theme() {
+      this.echartsInstance.dispose();
+      this.initChart();
+      this.screenAdapter();
+      this.updataChart();
     },
   },
   created() {

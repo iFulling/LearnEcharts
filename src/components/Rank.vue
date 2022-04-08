@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Rank",
   data() {
@@ -18,7 +19,10 @@ export default {
   },
   methods: {
     initChart() {
-      this.echartsInstance = this.$echarts.init(this.$refs.rank_ref, "chalk");
+      this.echartsInstance = this.$echarts.init(
+        this.$refs.rank_ref,
+        this.theme
+      );
       const initOption = {
         title: {
           text: "▎地区销售排行",
@@ -55,7 +59,7 @@ export default {
         this.startInterval();
       });
     },
-     getData(realData) {
+    getData(realData) {
       this.allData = realData;
       this.allData.sort((a, b) => {
         return b.value - a.value;
@@ -147,6 +151,17 @@ export default {
         }
         this.updataChart();
       }, 2000);
+    },
+  },
+  computed: {
+    ...mapState(["theme"]),
+  },
+  watch: {
+    theme() {
+      this.echartsInstance.dispose();
+      this.initChart();
+      this.screenAdapter();
+      this.updataChart();
     },
   },
   created() {
