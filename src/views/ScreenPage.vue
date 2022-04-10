@@ -1,16 +1,16 @@
 <template>
-  <div class="screen-container">
+  <div class="screen-container" :style="containerStyle">
     <header class="screen-header">
       <div>
-        <img src="/static/img/header_border_dark.png" alt="" />
+        <img :src="headerSrc" alt="" />
       </div>
       <span class="logo">
-        <img src="/static/img/logo_dark.png" alt="" />
+        <!-- <img :src="logoSrc" alt="" /> -->
       </span>
       <span class="title">电商平台实时监控系统</span>
       <div class="title-right">
-        <img @click="handleChangeTheme" src="/static/img/qiehuan_dark.png" class="qiehuan" />
-        <span class="datetime">2049-01-01 00:00:00</span>
+        <img @click="handleChangeTheme" :src="themeSrc" class="qiehuan" />
+        <span class="datetime">{{ dateTime }}</span>
       </div>
     </header>
     <div class="screen-body">
@@ -126,6 +126,9 @@ import theMap from "@/components/Map.vue";
 import Rank from "@/components/Rank.vue";
 import Hot from "@/components/Hot.vue";
 import Stock from "@/components/Stock.vue";
+import { mapState } from "vuex";
+import { getThemeValue } from "@/utils/theme_utils";
+import dayjs from "dayjs";
 export default {
   name: "ScreenPage",
   components: { Trend, Seller, theMap, Rank, Hot, Stock },
@@ -139,14 +142,12 @@ export default {
         hot: false,
         stock: false,
       },
+      dateTime: null,
+      timer: null,
     };
   },
   methods: {
     changeSize(chartName) {
-      //   this.fullScreenStatus[chartName] = !this.fullScreenStatus[chartName];
-      //   this.$nextTick(() => {
-      //     this.$refs[chartName].screenAdapter();
-      //   });
       const targetValue = !this.fullScreenStatus[chartName];
       this.$socket.send({
         action: "fullScreen",
@@ -163,15 +164,48 @@ export default {
         this.$refs[chartName].screenAdapter();
       });
     },
-    handleChangeTheme(){
-        this.$store.commit('changeTheme')
-    }
+    handleChangeTheme() {
+      this.$socket.send({
+        action: "themeChange",
+        socketType: "themeChange",
+        chartName: "",
+        value: "",
+      });
+    },
+    receiveTheme() {
+      this.$store.commit("changeTheme");
+    },
+  },
+  computed: {
+    ...mapState(["theme"]),
+    logoSrc() {
+      return "/static/img/" + getThemeValue(this.theme).logoSrc;
+    },
+    headerSrc() {
+      return "/static/img/" + getThemeValue(this.theme).handerBorderSrc;
+    },
+    themeSrc() {
+      return "/static/img/" + getThemeValue(this.theme).themeSrc;
+    },
+    containerStyle() {
+      return {
+        backgroundColor: getThemeValue(this.theme).backgroundColor,
+        color: getThemeValue(this.theme).titleColor,
+      };
+    },
   },
   created() {
     this.$socket.registerCallback("fullScreen", this.receiveData);
+    this.$socket.registerCallback("themeChange", this.receiveTheme);
+  },
+  mounted() {
+   this.timer =  setInterval(() => {
+      this.dateTime = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    }, 1000);
   },
   beforeDestroy() {
-    this.$socket.unRegisterCallback("fullScreen", this.receiveData);
+    this.$socket.unRegisterCallback("fullScreen");
+    this.$socket.unRegisterCallback("themeChange");
   },
 };
 </script>
@@ -232,8 +266,7 @@ export default {
   .logo {
     position: absolute;
     left: 0px;
-    top: 50%;
-    transform: translateY(-80%);
+    top: 10%;
     img {
       height: 35px;
       width: 128px;

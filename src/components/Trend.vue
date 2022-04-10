@@ -25,6 +25,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { getThemeValue } from "../utils/theme_utils";
 export default {
   data() {
     return {
@@ -158,6 +159,7 @@ export default {
     comStyle() {
       return {
         fontSize: this.titleFontSize + "px",
+        color: getThemeValue(this.theme).titleColor,
       };
     },
     marginStyle() {
@@ -180,7 +182,6 @@ export default {
   },
   mounted() {
     this.initChart();
-    console.log("mounted", Date.now());
     this.$socket.send({
       action: "getData",
       socketType: "trendData",

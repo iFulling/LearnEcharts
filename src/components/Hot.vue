@@ -9,6 +9,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { getThemeValue } from "../utils/theme_utils";
 export default {
   name: "Hot",
   data() {
@@ -26,6 +27,7 @@ export default {
     comStyle() {
       return {
         fontSize: this.titleFontSize + "px",
+        color: getThemeValue(this.theme).titleColor,
       };
     },
     ...mapState(["theme"]),
@@ -190,7 +192,6 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: white;
 }
 .arr-right::before {
   content: "\e6ed";
@@ -199,7 +200,6 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: white;
 }
 .cat-name {
   position: absolute;

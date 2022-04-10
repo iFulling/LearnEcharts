@@ -101,7 +101,7 @@ export default {
         type: "pie",
         radius: [outterRadius, innerRadius],
         label: {
-          fontSize: titleFontSize / 2,
+          fontSize: titleFontSize * 0.8,
         },
       };
       const adapterOption = {

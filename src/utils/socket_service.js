@@ -17,7 +17,7 @@ export default class SocketService {
     }
     this.ws = new WebSocket("ws://192.168.177.77:5055");
     this.ws.onopen = () => {
-      console.log("connect", Date.now());
+      console.log("connect");
       this.connected = true;
       this.connectRetryCount = 0;
     };
@@ -38,9 +38,9 @@ export default class SocketService {
           const realData = JSON.parse(recive.data);
           this.callBackMapping[socketType].call(this, realData);
         } else if (action === "fullScreen") {
-
           this.callBackMapping[socketType].call(this, recive);
         } else if (action === "themeChange") {
+          this.callBackMapping[socketType].call(this, recive);
         }
       }
     };
